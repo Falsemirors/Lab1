@@ -1,0 +1,221 @@
+class Node:
+    """Узел односвязного списка"""
+    def __init__(self, data):
+        self.data = data
+        self.next = None
+
+class LinkedList:
+    """Односвязный линейный список"""
+    def __init__(self):
+        self.head = None
+        self.size = 0
+    
+    def is_empty(self):
+        """Проверка на пустоту списка"""
+        return self.head is None
+    
+    def add_to_end(self, data):
+        """Добавление элемента в конец списка"""
+        new_node = Node(data)
+        if self.is_empty():
+            self.head = new_node
+        else:
+            current = self.head
+            while current.next is not None:
+                current = current.next
+            current.next = new_node
+        self.size += 1
+    
+    def delete_by_value(self, value):
+        """Удаление элемента по значению"""
+        if self.is_empty():
+            print("Список пуст!")
+            return False
+        
+        # Если удаляемый элемент в голове
+        if self.head.data == value:
+            self.head = self.head.next
+            self.size -= 1
+            return True
+        
+        # Поиск элемента для удаления
+        current = self.head
+        while current.next is not None:
+            if current.next.data == value:
+                current.next = current.next.next
+                self.size -= 1
+                return True
+            current = current.next
+        
+        print(f"Элемент {value} не найден в списке!")
+        return False
+    
+    def display(self, is_polynomial=False):
+        """Вывод списка на экран"""
+        if self.is_empty():
+            print("Список пуст!")
+            return
+        
+        current = self.head
+        elements = []
+        while current is not None:
+            if is_polynomial:
+                # Для многочленов отображаем степень
+                elements.append(f"{current.data} (степень: {self.size - len(elements) - 1})")
+            else:
+                elements.append(str(current.data))
+            current = current.next
+        
+        print(" -> ".join(elements))
+    
+    def split_even_odd(self):
+        """Разделение списка на четные и нечетные элементы"""
+        even_list = LinkedList()  # Четные элементы
+        odd_list = LinkedList()   # Нечетные элементы
+        
+        current = self.head
+        while current is not None:
+            if current.data % 2 == 0:
+                even_list.add_to_end(current.data)
+            else:
+                odd_list.add_to_end(current.data)
+            current = current.next
+        
+        return even_list, odd_list
+    
+    def combine_lists(self, list1, list2):
+        """Объединение двух списков в один (четные + нечетные)"""
+        result_list = LinkedList()
+        
+        # Добавляем четные элементы
+        current = list1.head
+        while current is not None:
+            result_list.add_to_end(current.data)
+            current = current.next
+        
+        # Добавляем нечетные элементы
+        current = list2.head
+        while current is not None:
+            result_list.add_to_end(current.data)
+            current = current.next
+        
+        return result_list
+
+def input_list():
+    """Ввод списка с клавиатуры"""
+    n = int(input("Введите количество элементов в последовательности: "))
+    
+    linked_list = LinkedList()
+    
+    print("Введите элементы последовательности:")
+    for i in range(n):
+        element = int(input(f"a{i+1}: "))
+        linked_list.add_to_end(element)
+    
+    return linked_list
+
+def main():
+    """Основная функция программы"""
+    print("Лабораторная работа: Односвязный линейный список")
+    print("=" * 50)
+    
+    # Ввод исходного списка
+    original_list = input_list()
+    
+    print("\nИсходный список:")
+    original_list.display()
+    
+    while True:
+        print("\n" + "=" * 50)
+        print("Меню:")
+        print("1. Добавить элемент в список")
+        print("2. Удалить элемент из списка")
+        print("3. Выполнить разделение на четные и нечетные")
+        print("4. Показать исходный список")
+        print("5. Выход")
+        
+        choice = input("Выберите действие (1-5): ")
+        
+        if choice == '1':
+            # Добавление элемента
+            new_element = int(input("Введите элемент для добавления: "))
+            original_list.add_to_end(new_element)
+            print(f"Элемент {new_element} добавлен в список!")
+            print("Обновленный список:")
+            original_list.display()
+        
+        elif choice == '2':
+            # Удаление элемента
+            if original_list.is_empty():
+                print("Список пуст, удалять нечего!")
+            else:
+                print("Текущий список:")
+                original_list.display()
+                element_to_delete = int(input("Введите элемент для удаления: "))
+                original_list.delete_by_value(element_to_delete)
+                print("Обновленный список:")
+                original_list.display()
+        
+        elif choice == '3':
+            # Разделение на четные и нечетные
+            if original_list.is_empty():
+                print("Список пуст!")
+                continue
+            
+            even_list, odd_list = original_list.split_even_odd()
+            
+            print("\nРезультат разделения:")
+            print("Четные элементы (x1,..., xk):")
+            even_list.display()
+            
+            print("Нечетные элементы (y1,..., yk):")
+            odd_list.display()
+            
+            # Объединение четных и нечетных
+            result_list = LinkedList().combine_lists(even_list, odd_list)
+            print("Результирующий список (x1,..., xk, y1,..., yk):")
+            result_list.display()
+        
+        elif choice == '4':
+            # Показать исходный список
+            print("\nИсходный список:")
+            original_list.display()
+        
+        elif choice == '5':
+            # Выход
+            print("Программа завершена!")
+            break
+        
+        else:
+            print("Неверный выбор! Попробуйте снова.")
+
+# Дополнительная функция для демонстрации работы с многочленами
+def polynomial_example():
+    """Пример работы с многочленами"""
+    print("\n" + "=" * 50)
+    print("Пример работы с многочленами:")
+    
+    # Создаем многочлен: 3x^3 + 2x^2 + 5x + 1
+    polynomial = LinkedList()
+    polynomial.add_to_end(3)  # Коэффициент при x^3
+    polynomial.add_to_end(2)  # Коэффициент при x^2
+    polynomial.add_to_end(5)  # Коэффициент при x^1
+    polynomial.add_to_end(1)  # Коэффициент при x^0
+    
+    print("Многочлен:")
+    polynomial.display(is_polynomial=True)
+    
+    # Разделяем на четные и нечетные коэффициенты
+    even_coeff, odd_coeff = polynomial.split_even_odd()
+    
+    print("\nЧетные коэффициенты:")
+    even_coeff.display(is_polynomial=True)
+    
+    print("Нечетные коэффициенты:")
+    odd_coeff.display(is_polynomial=True)
+
+if __name__ == "__main__":
+    main()
+    
+    # Запуск примера с многочленами
+    polynomial_example()
