@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Немного тепла для тебя</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@600;700&family=Nunito:wght@400;600&display=swap&subset=cyrillic" rel="stylesheet">
+<style>
+:root{
+  --bg1:#fff3d6; --bg2:#ffd9c7; --bg3:#d7d3f5;
+  --ink:#4a3552; --soft:#7d6786; --accent:#f08a5d; --accent-d:#dd6f40;
+  --card:rgba(255,255,255,.6); --edge:rgba(255,255,255,.85);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg1:#2b2440; --bg2:#3b2a4a; --bg3:#232047;
+    --ink:#fff1e6; --soft:#d6c3dc; --accent:#ff9a6c; --accent-d:#ff7d45;
+    --card:rgba(25,16,40,.55); --edge:rgba(255,220,200,.22);
+  }
+}
+:root[data-theme="dark"]{
+  --bg1:#2b2440; --bg2:#3b2a4a; --bg3:#232047;
+  --ink:#fff1e6; --soft:#d6c3dc; --accent:#ff9a6c; --accent-d:#ff7d45;
+  --card:rgba(25,16,40,.55); --edge:rgba(255,220,200,.22);
+}
+*{box-sizing:border-box}
+html,body{height:100%; margin:0}
+body{
+  background:var(--bg1);
+  background:linear-gradient(165deg,var(--bg1),var(--bg2) 50%,var(--bg3));
+  background-attachment:fixed; color:var(--ink); font-family:Nunito,system-ui,sans-serif;
+  display:flex; padding:16px 0; overflow-x:hidden; overflow-y:auto; text-align:center;
+}
+canvas{position:fixed; inset:0; width:100%; height:100%; pointer-events:none}
+.card{
+  position:relative; margin:auto; width:min(92vw,520px); padding:40px 26px 34px;
+  background:var(--card); border:1px solid var(--edge); border-radius:30px;
+  backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px);
+  box-shadow:0 20px 60px rgba(240,138,93,.2);
+}
+.small{font-size:16px; color:var(--soft); margin:0 0 12px; line-height:1.5}
+h1{font-family:Caveat,"Comic Sans MS",cursive; font-weight:700; font-size:clamp(36px,9vw,50px); line-height:1.1; margin:0 0 26px}
+.icon{font-size:54px; display:block; margin-bottom:8px; animation:float 3s ease-in-out infinite}
+@keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}
+.opts{display:flex; flex-wrap:wrap; gap:12px; justify-content:center}
+button{
+  font:inherit; font-weight:600; font-size:18px; cursor:pointer; border:0; border-radius:999px;
+  padding:13px 24px; color:#fff; background:var(--accent);
+  box-shadow:0 8px 20px rgba(240,138,93,.35); transition:transform .15s, background .2s;
+}
+button:hover{background:var(--accent-d)}
+button:active{transform:scale(.96)}
+button:focus-visible{outline:3px solid var(--ink); outline-offset:3px}
+button.ghost{background:transparent; color:var(--soft); box-shadow:none; border:1.5px solid var(--soft)}
+.bubble{
+  min-height:92px; padding:18px; margin:0 0 20px; border-radius:20px; font-size:19px; line-height:1.45;
+  background:var(--card); border:1px dashed var(--soft); display:flex; align-items:center; justify-content:center;
+}
+.pop{animation:pop .4s ease both}
+@keyframes pop{from{opacity:0; transform:scale(.92)}to{opacity:1; transform:none}}
+.wish{width:100%; font:inherit; padding:12px 14px; border-radius:16px; border:1.5px solid var(--edge);
+  background:var(--card); color:var(--ink); resize:none}
+.wish:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+.list{margin:0 0 6px; display:inline-block; text-align:left; font-size:18px; line-height:1.7}
+.list b{font-family:Caveat,cursive; font-size:26px}
+.fade{animation:in .5s ease both}
+@keyframes in{from{opacity:0; transform:translateY(8px)}to{opacity:1; transform:none}}
+@media (prefers-reduced-motion: reduce){ .icon,.fade,.pop{animation:none} }
+</style>
+</head>
+<body>
+<canvas id="fx"></canvas>
+<main class="card" id="card" aria-live="polite"></main>
+
+<script>
+// ====== Здесь удобно править тексты ======
+var NAME = "Сестрёнка";
+var BRO  = "брату";
+var MOOD_REPLY = {
+  "Грущу":     "Грустить можно. Я рядом, давай вместе немного подлатаем настроение.",
+  "Скучаю":    "Скучать нормально. Это не слабость, это про большое сердце.",
+  "Устала":    "Тогда сегодня можно ничего никому не доказывать. Просто выдохни.",
+  "Нормально": "Рад слышать! Тогда давай закрепим это настроение."
+};
+var COMPLIMENTS = [
+  "Ты сильнее, чем сама о себе думаешь.",
+  "Твой смех способен починить любой день.",
+  "Ты умеешь чувствовать глубоко. Это редкий дар.",
+  "Я горжусь тобой, правда.",
+  "Ты заслуживаешь человека, который старается ради тебя.",
+  "Не обязательно быть бодрой. Можно просто быть.",
+  "С тобой всегда легко и интересно.",
+  "Каждый день ты становишься чуточку мудрее и сильнее."
+];
+var STEPS = [
+  { key:"mood", icon:"☁️", lead:"Привет, " + NAME + ". Сегодня только для тебя", q:"Как ты себя чувствуешь?", opts:["Грущу","Скучаю","Устала","Нормально"] },
+  { key:"boost", type:"boost", icon:"🌷", q:"Заряд поддержки", need:3 },
+  { key:"plan", icon:"🍦", lead:"Теперь давай что-нибудь придумаем", q:"Что тебя сейчас порадует?", opts:["Мороженое и болтовня","Киноночь с пледом","Прогулка","Просто обнимашки"] },
+  { key:"wish", type:"text", icon:"💌", lead:"И последнее", q:"Хочешь рассказать, что на душе?", ph:"Можно написать мне. Или оставить пустым" }
+];
+// =========================================
+
+var card = document.getElementById("card");
+var answers = {}, step = 0, lastLead = "";
+
+function mk(t, fn, cls){
+  var b = document.createElement("button"); b.textContent = t; b.type = "button";
+  if(cls) b.className = cls; if(fn) b.onclick = fn; return b;
+}
+function esc(t){ return String(t).replace(/[&<>"]/g, function(c){ return {"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]; }); }
+function next(){ step++; burst(); render(); }
+
+function render(){
+  var s = STEPS[step];
+  if(!s) return finish();
+  var lead = s.lead || "";
+  if(s.key==="boost") lead = MOOD_REPLY[answers.mood] || "";
+  card.innerHTML = '<div class="fade"><span class="icon">' + s.icon + '</span><p class="small">' + esc(lead) +
+    '</p><h1>' + s.q + '</h1><div id="body"></div><div class="opts" id="opts"></div></div>';
+  var box = document.getElementById("opts");
+  if(s.type==="boost"){
+    var bub = document.createElement("div"); bub.className = "bubble";
+    bub.textContent = "Нажми на кнопку, там для тебя кое-что есть";
+    document.getElementById("body").appendChild(bub);
+    var taps = 0, order = COMPLIMENTS.slice().sort(function(){ return Math.random()-.5; });
+    var more = mk("Ещё тепла", function(){
+      bub.textContent = order[taps % order.length]; bub.classList.remove("pop"); void bub.offsetWidth; bub.classList.add("pop");
+      taps++; burst();
+      if(taps >= s.need && !document.getElementById("go")){
+        var go = mk("Дальше", next, "ghost"); go.id = "go"; box.appendChild(go);
+      }
+    });
+    box.appendChild(more);
+  } else if(s.type==="text"){
+    var inp = document.createElement("textarea");
+    inp.className = "wish"; inp.rows = 3; inp.maxLength = 300; inp.placeholder = s.ph;
+    document.getElementById("body").appendChild(inp);
+    box.style.marginTop = "16px";
+    box.appendChild(mk("Готово", function(){ answers[s.key] = inp.value.trim(); next(); }));
+  } else {
+    s.opts.forEach(function(o){ box.appendChild(mk(o, function(){ answers[s.key] = o; next(); })); });
+  }
+}
+
+function finish(){
+  var w = answers.wish ? esc(answers.wish) : "всё хорошо, просто будь рядом";
+  card.innerHTML = '<div class="fade"><span class="icon">🤗</span>' +
+    '<h1>Ты не одна</h1>' +
+    '<p class="small" style="font-size:18px">Скучать значит уметь любить. А ещё у тебя есть я.</p>' +
+    '<div class="list">Настроение: <b>' + esc(answers.mood.toLowerCase()) + '</b><br>' +
+    'Хочу: <b>' + esc(answers.plan.toLowerCase()) + '</b><br>' +
+    'На душе: <b>' + w + '</b></div>' +
+    '<p class="small" style="margin:18px 0">Отправь мне, я всё организую</p>' +
+    '<div class="opts"><button type="button" id="send">Отправить ответ ' + BRO + '</button></div></div>';
+  document.getElementById("send").onclick = function(){
+    var t = "Сестрёнка ответила 💛\nНастроение: " + answers.mood + "\nХочу: " + answers.plan +
+            "\nНа душе: " + (answers.wish || "ничего, просто будь рядом");
+    var b = this;
+    function fallback(){
+      try{ navigator.clipboard.writeText(t).then(function(){ b.textContent = "Скопировано, отправь " + BRO; }); }
+      catch(e){ prompt("Скопируй и отправь " + BRO + ":", t); }
+    }
+    if(navigator.share){ navigator.share({text:t}).catch(function(){}); } else { fallback(); }
+  };
+  for(var i=0;i<4;i++) setTimeout(burst, i*350);
+}
+
+// ====== Мягкие огоньки и сердечки ======
+var cv = document.getElementById("fx"), cx = cv.getContext("2d"), P = [], B = [];
+function size(){ cv.width = innerWidth*devicePixelRatio; cv.height = innerHeight*devicePixelRatio; }
+addEventListener("resize", size); size();
+function glow(){
+  return { x:Math.random()*innerWidth, y:innerHeight+20, r:3+Math.random()*7, vy:-(.25+Math.random()*.6),
+           a:Math.random()*6, va:.01+Math.random()*.02, o:.25+Math.random()*.4 };
+}
+for(var i=0;i<24;i++){ var g=glow(); g.y=Math.random()*innerHeight; P.push(g); }
+function burst(){
+  for(var i=0;i<22;i++){
+    var a = Math.random()*Math.PI*2, v = 2+Math.random()*4.5;
+    B.push({ x:innerWidth/2, y:innerHeight/2, vx:Math.cos(a)*v, vy:Math.sin(a)*v-2, life:1, r:6+Math.random()*8 });
+  }
+}
+function heart(x,y,r,col){
+  cx.save(); cx.translate(x,y); cx.beginPath(); cx.moveTo(0,r*.35);
+  cx.bezierCurveTo(-r,-r*.4,-r*.5,-r,0,-r*.45); cx.bezierCurveTo(r*.5,-r,r,-r*.4,0,r*.35);
+  cx.fillStyle = col; cx.fill(); cx.restore();
+}
+function tick(){
+  cx.setTransform(devicePixelRatio,0,0,devicePixelRatio,0,0);
+  cx.clearRect(0,0,innerWidth,innerHeight);
+  P.forEach(function(p,i){
+    p.y+=p.vy; p.x+=Math.sin(p.a)*.35; p.a+=p.va;
+    if(p.y<-20) P[i]=glow();
+    cx.globalAlpha=p.o; cx.beginPath(); cx.arc(p.x,p.y,p.r,0,6.3); cx.fillStyle="#ffb27a"; cx.fill();
+  });
+  B = B.filter(function(b){ return b.life>0; });
+  B.forEach(function(b){
+    b.x+=b.vx; b.y+=b.vy; b.vy+=.12; b.life-=.014;
+    cx.globalAlpha=Math.max(b.life,0); heart(b.x,b.y,b.r,"#f08a5d");
+  });
+  cx.globalAlpha=1; requestAnimationFrame(tick);
+}
+if(!matchMedia("(prefers-reduced-motion: reduce)").matches) tick();
+
+render();
+</script>
+</body>
+</html>
