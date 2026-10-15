@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Тебе, мама</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,600;1,400&family=Marck+Script&display=swap&subset=cyrillic" rel="stylesheet">
+<style>
+:root{
+  --desk:#e9e0cf; --paper:#fbf6ea; --line:rgba(63,91,74,.14);
+  --ink:#3b3a33; --green:#3f5b4a; --green-d:#2f4637; --clay:#b5593c;
+  --kraft:#d9b98a; --kraft-d:#c4a06c; --soft:#6d6a5d;
+  --b1:rgba(240,160,130,.5); --b2:rgba(244,205,110,.5); --b3:rgba(150,190,230,.45); --b4:rgba(150,200,160,.5);
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --desk:#1f2420; --paper:#2b302a; --line:rgba(190,215,190,.1);
+    --ink:#efe9da; --green:#9cc4a6; --green-d:#b6d8bf; --clay:#e58a6a; --soft:#b5b3a4;
+    --b1:rgba(240,140,110,.2); --b2:rgba(240,200,100,.16); --b3:rgba(120,170,220,.2); --b4:rgba(120,190,140,.2);
+  }
+}
+:root[data-theme="dark"]{
+  --desk:#1f2420; --paper:#2b302a; --line:rgba(190,215,190,.1);
+  --ink:#efe9da; --green:#9cc4a6; --green-d:#b6d8bf; --clay:#e58a6a; --soft:#b5b3a4;
+    --b1:rgba(240,140,110,.2); --b2:rgba(240,200,100,.16); --b3:rgba(120,170,220,.2); --b4:rgba(120,190,140,.2);
+}
+*{box-sizing:border-box}
+html,body{height:100%; margin:0}
+body{
+  background:
+    radial-gradient(circle at 10% 6%, var(--b1), transparent 44%),
+    radial-gradient(circle at 92% 18%, var(--b2), transparent 42%),
+    radial-gradient(circle at 86% 94%, var(--b3), transparent 46%),
+    radial-gradient(circle at 6% 92%, var(--b4), transparent 44%),
+    var(--desk);
+  background-attachment:fixed; color:var(--ink); font-family:Lora,Georgia,serif;
+  display:flex; padding:18px 0; overflow-x:hidden; overflow-y:auto;
+}
+#app{margin:auto; width:min(92vw,500px); text-align:center}
+.hint{font-style:italic; color:var(--soft); margin:26px 0 0; animation:pulse 2.2s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.45}}
+
+/* конверт */
+.env{position:relative; width:min(78vw,300px); height:200px; margin:0 auto; cursor:pointer; perspective:900px; background:none; border:0; padding:0; display:block}
+.env .back{position:absolute; inset:0; background:var(--kraft-d); border-radius:6px; box-shadow:0 14px 30px rgba(0,0,0,.22)}
+.env .note{position:absolute; left:14px; right:14px; top:12px; height:170px; background:var(--paper); border-radius:4px; transition:transform .9s ease .35s}
+.env .front{position:absolute; inset:0; background:var(--kraft); border-radius:6px;
+  clip-path:polygon(0 0,50% 58%,100% 0,100% 100%,0 100%); z-index:2}
+.env .flap{position:absolute; left:0; right:0; top:0; height:112px; background:var(--kraft); transform-origin:top; z-index:3;
+  clip-path:polygon(0 0,100% 0,50% 100%); transition:transform .6s ease}
+.env .to{position:absolute; left:0; right:0; bottom:26px; z-index:4; font-family:"Marck Script",cursive; font-size:32px; color:var(--green-d)}
+.env .seal{position:absolute; left:50%; top:86px; width:42px; height:42px; margin-left:-21px; border-radius:50%; z-index:5;
+  background:var(--clay); color:#fff; display:flex; align-items:center; justify-content:center; font-size:20px;
+  box-shadow:0 3px 8px rgba(0,0,0,.3); transition:opacity .3s}
+.env.open .flap{transform:rotateX(180deg); z-index:1}
+.env.open .seal{opacity:0}
+.env.open .note{transform:translateY(-70px)}
+.env:focus-visible{outline:3px solid var(--green); outline-offset:8px}
+
+/* письмо */
+.paper{
+  background:var(--paper); border-radius:6px; padding:34px 26px 30px; text-align:left;
+  background-image:repeating-linear-gradient(transparent 0 33px, var(--line) 33px 34px);
+  box-shadow:0 18px 40px rgba(0,0,0,.18); transform:rotate(-.4deg); animation:rise .7s ease both;
+}
+@keyframes rise{from{opacity:0; transform:translateY(24px) rotate(-.4deg)}to{opacity:1; transform:rotate(-.4deg)}}
+h1{font-family:"Marck Script",cursive; font-weight:400; font-size:clamp(36px,9vw,46px); color:var(--clay); margin:0 0 10px}
+p{margin:0 0 17px; font-size:18px; line-height:34px}
+.reason{animation:fadeup .8s ease both}
+#lines .reason::before{content:"♥ "; color:var(--clay)}
+#lines .reason:nth-child(5n+2)::before{color:#d9a02f}
+#lines .reason:nth-child(5n+3)::before{color:#5fa37a}
+#lines .reason:nth-child(5n+4)::before{color:#5d9bc4}
+#lines .reason:nth-child(5n+5)::before{color:#d9738a}
+@keyframes fadeup{from{opacity:0; transform:translateY(8px)}to{opacity:1; transform:none}}
+.close{font-size:20px; font-style:italic; color:var(--green-d)}
+.sign{font-family:"Marck Script",cursive; font-size:30px; color:var(--clay); text-align:right; margin:6px 0 0; line-height:1.2}
+.row{text-align:center; margin-top:18px; position:relative}
+button.btn{
+  font:inherit; font-size:17px; font-weight:600; cursor:pointer; border-radius:999px; padding:12px 26px;
+  color:#fff; background:var(--green); border:0; transition:transform .15s, background .2s;
+}
+button.btn:hover{background:var(--green-d)}
+button.btn:active{transform:scale(.96)}
+button.btn.ghost{background:transparent; color:var(--green-d); border:1.5px solid var(--green)}
+button.btn:focus-visible, textarea:focus-visible{outline:3px solid var(--clay); outline-offset:3px}
+.count{margin:12px 0 0; color:var(--soft); font-style:italic; min-height:26px}
+textarea{width:100%; font:inherit; font-size:16px; padding:12px 14px; border-radius:10px; border:1.5px solid var(--line);
+  background:var(--paper); color:var(--ink); resize:none; margin:14px 0 12px}
+.fl{position:absolute; left:50%; bottom:40px; font-size:26px; pointer-events:none; animation:fly 1.5s ease-out forwards}
+@keyframes fly{to{transform:translate(var(--dx),-130px) scale(1.3); opacity:0}}
+.paper::before{content:""; display:block; height:7px; margin:-34px -26px 26px; border-radius:6px 6px 0 0;
+  background:linear-gradient(90deg,#e58a6a,#e0a63a,#8fbf8f,#6aa6c9,#d9738a)}
+#hug{background:linear-gradient(135deg,#e58a6a,#d9738a)}
+#hug:hover{background:linear-gradient(135deg,#d9775a,#cc6079)}
+@media (prefers-reduced-motion: reduce){ .hint,.paper,.reason,.fl{animation:none} .env .note,.env .flap{transition:none} }
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+// ====== Здесь удобно править тексты ======
+var MOM  = "Мама";
+var FROM = "Твой Вова";
+var INTRO = "Без повода. Просто захотелось сказать тебе кое-что важное.";
+var REASONS = [
+  "За то, что ты рядом, даже когда я забываю сказать, как это важно.",
+  "За дом, в который так хочется возвращаться.",
+  "За твои советы. Даже когда я спорил, ты оказывалась права.",
+  "За то, что ты верила в меня раньше, чем я сам поверил.",
+  "За заботу о мелочах, которых я раньше не замечал.",
+  "За то, что ты просто есть."
+];
+var CLOSING = "Я очень тебя люблю. Спасибо тебе за всё.";
+// =========================================
+
+var app = document.getElementById("app");
+
+function envelope(){
+  app.innerHTML =
+    '<button class="env" id="env" type="button" aria-label="Открыть письмо">' +
+    '<div class="back"></div><div class="note"></div><div class="front"></div>' +
+    '<div class="flap"></div><div class="seal">♥</div><div class="to">' + MOM + '</div></button>' +
+    '<p class="hint">Нажми, чтобы открыть</p>';
+  var env = document.getElementById("env"), opened = false;
+  env.onclick = function(){
+    if(opened) return; opened = true;
+    env.classList.add("open");
+    setTimeout(letter, 1300);
+  };
+}
+
+function letter(){
+  app.innerHTML = '<div class="paper"><h1>Дорогая ' + MOM.toLowerCase() + ',</h1>' +
+    '<p>' + INTRO + '</p><div id="lines"></div>' +
+    '<div class="row" id="more"><button class="btn ghost" id="next" type="button">Читать дальше</button></div>' +
+    '<div id="end"></div></div>';
+  var shown = 0, lines = document.getElementById("lines");
+  document.getElementById("next").onclick = function(){
+    var p = document.createElement("p"); p.className = "reason"; p.textContent = REASONS[shown++];
+    lines.appendChild(p);
+    p.scrollIntoView({behavior:"smooth", block:"center"});
+    if(shown >= REASONS.length){ document.getElementById("more").remove(); ending(); }
+  };
+}
+
+function ending(){
+  var end = document.getElementById("end");
+  end.innerHTML =
+    '<p class="close reason" style="animation-delay:.5s">' + CLOSING + '</p>' +
+    '<p class="sign reason" style="animation-delay:.9s">' + FROM + '</p>' +
+    '<div class="row"><button class="btn" id="hug" type="button">Обнять в ответ</button>' +
+    '<p class="count" id="cnt"></p></div><div id="reply"></div>';
+  var n = 0, cnt = document.getElementById("cnt");
+  document.getElementById("hug").onclick = function(){
+    n++;
+    cnt.textContent = n === 1 ? "Вова почувствовал" : "Объятий: " + n;
+    var f = document.createElement("span"); f.className = "fl";
+    f.textContent = ["🤍","🌷","🌿","☀️"][n % 4];
+    f.style.setProperty("--dx", (Math.random()*120-60) + "px");
+    this.parentNode.appendChild(f); setTimeout(function(){ f.remove(); }, 1500);
+    if(n === 1) replyBox(function(){ return n; });
+  };
+}
+
+function replyBox(getN){
+  var r = document.getElementById("reply");
+  r.innerHTML = '<textarea id="msg" rows="3" maxlength="300" placeholder="Если хочешь, напиши пару слов в ответ"></textarea>' +
+    '<div class="row" style="margin-top:0"><button class="btn ghost" id="send" type="button">Отправить ответ</button></div>';
+  document.getElementById("send").onclick = function(){
+    var m = document.getElementById("msg").value.trim();
+    var t = MOM + " обняла в ответ 🤍 Объятий: " + getN() + (m ? "\n" + m : "");
+    var b = this;
+    function fallback(){
+      try{ navigator.clipboard.writeText(t).then(function(){ b.textContent = "Скопировано, отправь в чат"; }); }
+      catch(e){ prompt("Скопируй и отправь в чат:", t); }
+    }
+    if(navigator.share){ navigator.share({text:t}).catch(function(){}); } else { fallback(); }
+  };
+}
+
+envelope();
+</script>
+</body>
+</html>
